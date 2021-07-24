@@ -16,7 +16,7 @@ const port = process.env.PORT || 8080;
 app.get('/', (req, res) => {
 	// mysqlCon.connect(function(err) {
 	// 	if (err) throw err;
-		res.send("Connected!!!")
+		res.send("Connected!")
 	// });
 })
 
