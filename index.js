@@ -1,23 +1,57 @@
 const express = require('express');
 const app = express();
 
-require('dotenv').config()
-// const mysql = require("mysql")
+//npm-package
+require("dotenv").config()
 
-// const mysqlCon = mysql.createConnection({
-// 	host    : process.env.DATABASE_HOST,
-// 	user    : process.env.DATABASE_USER,
-// 	password: process.env.DATABASE_PASS,
-// 	database: process.env.DATABASE_USEDDATABASE
-// });
+const port = process.env.PORT;
 
-const port = process.env.PORT || 8080;
+//auth
+const verifyAdmin = require("./middleware/auth")
+app.all("*", verifyAdmin)
+
+//import router
+const loginRoutes = require("./routes/login.route")
+const newsRoutes = require("./routes/news.route")
+const partnerRoutes = require("./routes/partner.route")
+const handbookRoutes = require("./routes/handbook.route")
+const countRoutes = require("./routes/count.route")
+const categoryRoutes = require("./routes/category.route")
+const bomRoutes = require("./routes/bom.route")
+const adviserRoutes = require("./routes/adviser.route")
+
+//use router
+app.use(express.json()) // for parsing application/json
+
+app.use('/login', loginRoutes)
+
+app.use('/news', newsRoutes)
+app.use('/partner', partnerRoutes)
+app.use('/handbook', handbookRoutes)
+app.use('/count', countRoutes)
+app.use('/category', categoryRoutes)
+app.use('/bom', bomRoutes)
+app.use('/adviser', adviserRoutes)
+
+
+//CORS
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST , PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Pass to next layer of middleware
+    next();
+});
 
 app.get('/', (req, res) => {
-	// mysqlCon.connect(function(err) {
-	// 	if (err) throw err;
-		res.send("Connected!")
-	// });
+	res.send("Enactus NEU")
 })
 
 app.listen(port, () => {
