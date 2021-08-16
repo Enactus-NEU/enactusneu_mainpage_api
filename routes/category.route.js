@@ -6,12 +6,35 @@ const con = require("../mysql/mysql_con")
 
 //get all
 router.get('/', (req, res) => {
-    let sql = `SELECT * FROM category`
+    let sql = `SELECT category_id as id, category_name FROM category`
 	con.query(sql, function(err, result) {
 		
         if (err) return res.status(500).json({ message: err })
-		
-        res.json(result)
+
+        //sort
+        const sort = JSON.parse(req.query.sort)
+        if (sort[0] === "id") {
+            result.sort((a, b) => {
+                if (sort[1] === "ASC") {
+                    return a.id - b.id
+                } else if (sort[1] === "DESC") {
+                    return b.id - a.id
+                }
+            })
+        } else {
+            result.sort((a, b) => {
+                if (sort[1] === "ASC") {
+                    return a[sort[0]].charCodeAt(0) - b[sort[0]].charCodeAt(0)
+                } else if (sort[1] === "DESC") {
+                    return b[sort[0]].charCodeAt(0) - a[sort[0]].charCodeAt(0)
+                }
+            })
+        }
+
+        res.setHeader("Content-Range", `news 0-${result.length}/${result.length}`)
+        //pagination
+        const range = JSON.parse(req.query.range)
+        res.status(200).json(result.slice(range[0], range[1]))
 	})
 })
 
@@ -19,14 +42,14 @@ router.get('/', (req, res) => {
 //getting one
 router.get('/:id', (req, res) => {
 
-    let sql = `SELECT * FROM category WHERE category.id=${req.params.id}`
+    let sql = `SELECT category_id as id, category_name FROM category WHERE category.category_id=${req.params.id}`
 	con.query(sql, function(err, result) {
 		
         if (err) return res.status(500).json({ message: err })
 		
         else if (result && result.length === 0) return res.status(404).json({ message: "Cannot find the category" })
         
-        res.json(result)
+        res.json(result[0])
 	})
 })
 
@@ -41,28 +64,28 @@ router.post('/', (req, res) => {
 		
         if (err) return res.status(400).json({ message: err })
         
-        con.query(`SELECT * FROM category WHERE id=${result.insertId}`, function(err, result) {
+        con.query(`SELECT category_id as id, category_name FROM category WHERE category_id=${result.insertId}`, function(err, result) {
             if (err) return res.status(500).json({ message: err })
             
-            res.status(201).json(result)
+            res.status(201).json(result[0])
         })
 	})
 })
 
 //updating one
-router.patch("/:id", function(req, res) {
+router.put("/:id", function(req, res) {
 
-    let sql = `UPDATE category SET ? WHERE id=${req.params.id}`
-    con.query(sql, req.body, function(err, result) {
+    let sql = `UPDATE category SET category_name='${req.body.category_name}' WHERE category_id=${req.params.id}`
+    con.query(sql, function(err, result) {
         
         if (err) return res.status(400).json({ message: err })
 
-        con.query(`SELECT * FROM category WHERE id=${req.params.id}`, function(err, result) {
+        con.query(`SELECT category_id as id, category_name FROM category WHERE category_id=${req.params.id}`, function(err, result) {
             if (err) return res.status(500).json({ message: err })
             
             else if (result && result.length === 0) return res.status(404).json({ message: "Cannot find the category" })
 
-            res.status(201).json(result)
+            res.status(201).json(result[0])
         })
     })
 })
@@ -70,7 +93,7 @@ router.patch("/:id", function(req, res) {
 
 // deleting one
 router.delete('/:id', function(req, res) {
-    let sql = `DELETE FROM category WHERE id=${req.params.id}`
+    let sql = `DELETE FROM category WHERE category_id=${req.params.id}`
     con.query(sql, function(err, result) {
 
         if (err) return res.status(500).json({ message: err })

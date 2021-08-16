@@ -1,12 +1,34 @@
 const express = require('express');
 const app = express();
 
+
 //npm-package
 require("dotenv").config()
+const cors = require('cors')
+
 
 const port = process.env.PORT;
 
-//auth
+//CORS
+app.use(cors())
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST , PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', '*');
+
+    res.setHeader('Access-Control-Expose-Headers', '*');
+
+    // Pass to next layer of middleware
+    next();
+});
+
+// auth
 const verifyAdmin = require("./middleware/auth")
 app.all("*", verifyAdmin)
 
@@ -33,22 +55,6 @@ app.use('/category', categoryRoutes)
 app.use('/bom', bomRoutes)
 app.use('/adviser', adviserRoutes)
 
-
-//CORS
-app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST , PATCH, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Pass to next layer of middleware
-    next();
-});
 
 app.get('/', (req, res) => {
 	res.send("Enactus NEU")

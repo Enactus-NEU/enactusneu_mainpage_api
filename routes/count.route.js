@@ -10,8 +10,31 @@ router.get('/', (req, res) => {
 	con.query(sql, function(err, result) {
 		
         if (err) return res.status(500).json({ message: err })
-		
-        res.json(result)
+
+        //sort
+        const sort = JSON.parse(req.query.sort)
+        if (sort[0] === "id") {
+            result.sort((a, b) => {
+                if (sort[1] === "ASC") {
+                    return a.id - b.id
+                } else if (sort[1] === "DESC") {
+                    return b.id - a.id
+                }
+            })
+        } else {
+            result.sort((a, b) => {
+                if (sort[1] === "ASC") {
+                    return a[sort[0]].charCodeAt(0) - b[sort[0]].charCodeAt(0)
+                } else if (sort[1] === "DESC") {
+                    return b[sort[0]].charCodeAt(0) - a[sort[0]].charCodeAt(0)
+                }
+            })
+        }
+
+        res.setHeader("Content-Range", `news 0-${result.length}/${result.length}`)
+        //pagination
+        const range = JSON.parse(req.query.range)
+        res.status(200).json(result.slice(range[0], range[1]))
 	})
 })
 
@@ -26,7 +49,7 @@ router.get('/:id', (req, res) => {
 		
         else if (result && result.length === 0) return res.status(404).json({ message: "Cannot find" })
         
-        res.json(result)
+        res.json(result[0])
 	})
 })
 
@@ -45,13 +68,13 @@ router.post('/', (req, res) => {
         con.query(`SELECT * FROM count WHERE id=${result.insertId}`, function(err, result) {
             if (err) return res.status(500).json({ message: err })
             
-            res.status(201).json(result)
+            res.status(201).json(result[0])
         })
 	})
 })
 
 //updating one
-router.patch("/:id", function(req, res) {
+router.put("/:id", function(req, res) {
 
     let sql = `UPDATE count SET ? WHERE id=${req.params.id}`
     con.query(sql, req.body, function(err, result) {
@@ -63,7 +86,7 @@ router.patch("/:id", function(req, res) {
             
             else if (result && result.length === 0) return res.status(404).json({ message: "Cannot find" })
 
-            res.status(201).json(result)
+            res.status(201).json(result[0])
         })
     })
 })

@@ -21,7 +21,7 @@ router.post('/', function(req, res) {
         const accessToken = jwt.sign({ id: result[0].id, email: result[0].email }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: "12h"
         })
-        res.json({ accessToken })
+        res.json({ accessToken, email })
     })
 })
 
