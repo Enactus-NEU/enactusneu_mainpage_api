@@ -6,7 +6,7 @@ const con = require("../mysql/mysql_con")
 
 //get all
 router.get('/', (req, res, next) => {
-    let sql = `SELECT * FROM enactus_neu.news, enactus_neu.category WHERE news.category_id = category.category_id`
+    let sql = `SELECT * FROM news, category WHERE news.category_id = category.category_id`
 	con.query(sql, function(err, result) {
         
         if (err) return res.status(500).json({ message: err })
