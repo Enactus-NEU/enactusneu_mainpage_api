@@ -10,23 +10,28 @@ const cors = require('cors')
 const port = process.env.PORT;
 
 //CORS
-app.use(cors())
-app.use(function (req, res, next) {
+app.use(cors({
+    origin: "*",
+    allowedHeaders: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    exposedHeaders: "Content-Range"
+}))
+// app.use(function (req, res, next) {
 
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*');
+//     // Website you wish to allow to connect
+//     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST , PATCH, DELETE');
+//     // Request methods you wish to allow
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST , PATCH, DELETE');
 
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', '*');
+//     // Request headers you wish to allow
+//     res.setHeader('Access-Control-Allow-Headers', '*');
 
-    res.setHeader('Access-Control-Expose-Headers', '*');
+//     res.setHeader('Access-Control-Expose-Headers', '*');
 
-    // Pass to next layer of middleware
-    next();
-});
+//     // Pass to next layer of middleware
+//     next();
+// });
 
 // auth
 const verifyAdmin = require("./middleware/auth")

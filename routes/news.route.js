@@ -55,7 +55,7 @@ router.get('/', (req, res, next) => {
             const range = JSON.parse(req.query.range)
             res.status(200).json(result.slice(range[0], range[1]))
         } else {
-            res.status(200).json("hello")
+            res.status(200).json(result)
         }
 	})
 })

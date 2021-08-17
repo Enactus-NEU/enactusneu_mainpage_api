@@ -11,30 +11,34 @@ router.get('/', (req, res) => {
 		
         if (err) return res.status(500).json({ message: err })
 
-        //sort
-        const sort = JSON.parse(req.query.sort)
-        if (sort[0] === "id") {
-            result.sort((a, b) => {
-                if (sort[1] === "ASC") {
-                    return a.id - b.id
-                } else if (sort[1] === "DESC") {
-                    return b.id - a.id
-                }
-            })
+        if (Object.keys(req.query).length > 0) {
+            //sort
+            const sort = JSON.parse(req.query.sort)
+            if (sort[0] === "id") {
+                result.sort((a, b) => {
+                    if (sort[1] === "ASC") {
+                        return a.id - b.id
+                    } else if (sort[1] === "DESC") {
+                        return b.id - a.id
+                    }
+                })
+            } else {
+                result.sort((a, b) => {
+                    if (sort[1] === "ASC") {
+                        return a[sort[0]].charCodeAt(0) - b[sort[0]].charCodeAt(0)
+                    } else if (sort[1] === "DESC") {
+                        return b[sort[0]].charCodeAt(0) - a[sort[0]].charCodeAt(0)
+                    }
+                })
+            }
+            //pagination
+            const range = JSON.parse(req.query.range)
+            res.setHeader("Content-Range", `news 0-${result.length}/${result.length}`)
+            res.status(200).json(result.slice(range[0], range[1]))
         } else {
-            result.sort((a, b) => {
-                if (sort[1] === "ASC") {
-                    return a[sort[0]].charCodeAt(0) - b[sort[0]].charCodeAt(0)
-                } else if (sort[1] === "DESC") {
-                    return b[sort[0]].charCodeAt(0) - a[sort[0]].charCodeAt(0)
-                }
-            })
+            res.json(result)
         }
 
-        res.setHeader("Content-Range", `news 0-${result.length}/${result.length}`)
-        //pagination
-        const range = JSON.parse(req.query.range)
-        res.status(200).json(result.slice(range[0], range[1]))
 	})
 })
 
