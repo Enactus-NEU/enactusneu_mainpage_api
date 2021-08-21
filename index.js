@@ -46,7 +46,8 @@ const countRoutes = require("./routes/count.route")
 const categoryRoutes = require("./routes/category.route")
 const bomRoutes = require("./routes/bom.route")
 const adviserRoutes = require("./routes/adviser.route")
-
+//send email
+const contactRoute = require("./routes/contact.route")
 //use router
 app.use(express.json()) // for parsing application/json
 
@@ -59,7 +60,7 @@ app.use('/count', countRoutes)
 app.use('/category', categoryRoutes)
 app.use('/bom', bomRoutes)
 app.use('/adviser', adviserRoutes)
-
+app.use('/contact', contactRoute)
 
 app.get('/', (req, res) => {
 	res.send("Enactus NEU")

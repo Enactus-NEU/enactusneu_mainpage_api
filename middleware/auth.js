@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 
 function verifyAdmin(req, res, next) {
-    if (req.path === "/login" || req.method === "GET") return next();
+    if (req.path === "/login" || req.path === "/contact" || req.method === "GET") return next();
 
     const authHeader = req.header('Authorization')
     const token = authHeader && authHeader.split(" ")[1]
