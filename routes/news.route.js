@@ -6,7 +6,7 @@ const con = require("../mysql/mysql_con")
 
 //get all
 router.get('/', (req, res, next) => {
-    let sql = `SELECT * FROM news, category WHERE news.category_id = category.category_id`
+    let sql = `SELECT * FROM news, category WHERE news.category_id = category.category_id ORDER BY id DESC`
 	con.query(sql, function(err, result) {
         
         if (err) return res.status(500).json({ message: err })
@@ -53,7 +53,7 @@ router.get('/', (req, res, next) => {
 
             //pagination
             const range = JSON.parse(req.query.range)
-            res.status(200).json(result.slice(range[0], range[1]))
+            res.status(200).json(result.slice(range[0], range[1] + 1))
         } else {
             res.status(200).json(result)
         }
@@ -61,7 +61,7 @@ router.get('/', (req, res, next) => {
 })
 
 router.get("/short-name", function(req, res) {
-    let sql = `SELECT DISTINCT id, short_name, avatar, cover, des, is_main FROM news WHERE category_id=${req.query.category_id || true} AND short_name IS NOT NULL AND is_main = 1 ORDER BY id DESC`
+    let sql = `SELECT DISTINCT id, short_name, avatar, cover, brief, is_main FROM news WHERE category_id=${req.query.category_id || true} AND short_name IS NOT NULL AND is_main = 1 ORDER BY id DESC`
     con.query(sql, function(err, result) {
         if (err) return res.status(500).json({ message: err })
         
