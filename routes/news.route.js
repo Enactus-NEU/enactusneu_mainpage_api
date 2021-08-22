@@ -61,7 +61,7 @@ router.get('/', (req, res, next) => {
 })
 
 router.get("/short-name", function(req, res) {
-    let sql = `SELECT DISTINCT id, short_name, avatar, cover, des, is_main FROM news WHERE category_id=${req.query.category_id || true} AND short_name IS NOT NULL AND is_main = 1 ORDER BY id`
+    let sql = `SELECT DISTINCT id, short_name, avatar, cover, des, is_main FROM news WHERE category_id=${req.query.category_id || true} AND short_name IS NOT NULL AND is_main = 1 ORDER BY id DESC`
     con.query(sql, function(err, result) {
         if (err) return res.status(500).json({ message: err })
         
